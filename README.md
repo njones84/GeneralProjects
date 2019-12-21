@@ -5,4 +5,5 @@ Ex. - A* pathfinding. Games in Unity. Card games in an IDE.
 
 
 # Directory
-[AStar in Java](/AStar)
+1. [AStar in Java](/AStar)
+
