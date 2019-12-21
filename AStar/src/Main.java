@@ -237,10 +237,11 @@ public class Main {
         // loop through each node in the frontier and determine which one is the best to expand on
         for (Node x : frontier)
         {
-            if (x.GetSumCost() < bestSumCost)
-            {
+            if (x.GetSumCost() < bestSumCost) {
+            	
                 bestSumCost = x.GetSumCost();
                 best = x;
+                
             }
         }
 
