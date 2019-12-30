@@ -1,4 +1,8 @@
-import java.util.*;
+import java.util.Random;
+import java.util.ArrayList;
+
+import java.awt.*;
+import javax.swing.*;
 
 public class Grid {
 
@@ -6,26 +10,38 @@ public class Grid {
 	private int rows;
 	private int cols;
 	private int obstacleCount;
+	
+	private JButton[][] buttons;
+	private JPanel panel;
+	private JFrame frame;
 
 	public Grid() {
 
-		grid = null;
-		rows = 0;
-		cols = 0;
-		obstacleCount = 0;
+		this.grid = null;
+		this.buttons = null;
+		this.panel = null;
+		this.frame = null;
+		
+		this.rows = 0;
+		this.cols = 0;
+		this.obstacleCount = 0;
 
 	}
 
 	public Grid(int rows, int cols, int obstacleCount) {
 
-		grid = null;
+		this.grid = null;
+		this.buttons = null;
+		this.panel = null;
+		this.frame = null;
+		
 		this.rows = rows;
 		this.cols = cols;
 		this.obstacleCount = obstacleCount;
 
 	}
 
-	public void GenerateMap() {
+	public void GenerateGrid() {
 
 		grid = new Node[rows][cols];
 
@@ -35,7 +51,7 @@ public class Grid {
 
 	}
 
-	public void BlockMap() {
+	public void BlockGrid() {
 
 		int count = 0;
 		Random rng = new Random();
@@ -54,7 +70,7 @@ public class Grid {
 		}
 	}
 
-	public void PrintMap() {
+	public void PrintGrid() {
 
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < cols; j++) {
@@ -73,6 +89,39 @@ public class Grid {
 			}
 			System.out.println();
 		}
+	}
+	
+	public void VisualizeGrid() {
+		
+		// initialize the frame for the board
+		frame = new JFrame("A* Visualization");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		// creates a table for the A* algorithm
+		panel = new JPanel();
+		panel.setLayout(new GridLayout(rows, cols));
+		panel.setBackground(Color.white);
+		panel.setBorder(BorderFactory.createLineBorder(Color.lightGray, 2));
+		
+		buttons = new JButton[rows][cols];
+		// each tile will be a button for more functionality
+		for (int i = 0; i < rows; i++)
+			for (int k = 0; k < cols; k++) {
+						
+				buttons[i][k] = new JButton();
+				buttons[i][k].setSize(new Dimension(5, 5));
+				panel.add(buttons[i][k]);
+						
+			}
+		
+		// get screen dimensions to display the JFrame appropriately
+		Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();
+		
+		frame.getContentPane().add(panel);
+		frame.setVisible(true);
+		frame.setSize(screenDim.height - 200, screenDim.height - 200);
+		frame.setLocation(screenDim.width / 2 - frame.getSize().width / 2, screenDim.height / 2 - frame.getSize().height / 2);
+		
 	}
 
 	public ArrayList<Node> AddNeighbors(Node node) {

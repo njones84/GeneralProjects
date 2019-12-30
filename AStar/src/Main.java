@@ -1,24 +1,26 @@
 import java.util.*;
+import java.awt.*;
+import javax.swing.*;
 
 public class Main {
 
-	static Grid map;
-	static Scanner input = new Scanner(System.in);
+	private static Node startNode;
+	private static Node goalNode;
+	private static Grid grid;
+	private static Scanner input = new Scanner(System.in);
+	
+	private static int x;
+	private static int y;
+	private static int rows;
+	private static int cols;
+	private static int obstacleCount;
+	private static boolean found = false;
 	
 	public static void main(String[] args) {
 
 		int choice = 1;
 
 		while (choice == 1) {
-
-			int x;
-			int y;
-			int rows;
-			int cols;
-			int obstacleCount;
-			boolean found = false;
-			Node startNode;
-			Node goalNode;
 			
 			// get amount of rows
 			System.out.println("How many rows would you like in your grid? (Please be generous cause memory can be an issue!): ");
@@ -34,13 +36,15 @@ public class Main {
 			
 			// generate a new grid at the start of every loop
 			System.out.println("Generating new grid to navigate.");
-			map = new Grid(rows, cols, obstacleCount);
-			map.GenerateMap();
+			grid = new Grid(rows, cols, obstacleCount);
+			grid.GenerateGrid();
 
-			// block the map after it is generated
+			// block the grid after it is generated
 			System.out.println("Adding roadblocks to cells.");
-			map.BlockMap();
+			grid.BlockGrid();
 
+			Visualize();
+			
 			// ask the user to enter the start node's X and Y value
 			System.out.print("Please enter a starting node X value (0-" + (rows - 1) + "): ");
 			x = input.nextInt();
@@ -61,7 +65,7 @@ public class Main {
 
 			}
 
-			startNode = map.GetNode(x, y);
+			startNode = grid.GetNode(x, y);
 			startNode.SetInfo("S");
 
 			// ask the user to enter the goal node's X and Y value
@@ -84,12 +88,12 @@ public class Main {
 
 			}
 
-			goalNode = map.GetNode(x, y);
+			goalNode = grid.GetNode(x, y);
 			goalNode.SetInfo("G");
 
-			// print update map
-			System.out.println("Displaying map. Cells with an X cannot be traversed.");
-			map.PrintMap();
+			// print update grid
+			System.out.println("Displaying grid. Cells with an X cannot be traversed.");
+			grid.PrintGrid();
 
 			// A* search algorithm
 			if (goalNode == startNode)
@@ -111,6 +115,14 @@ public class Main {
 		}
 	}
 
+	public static void Visualize() {
+		
+		// initiate visualization of the grid
+		grid.VisualizeGrid();
+		
+		
+	}
+	
 	public static boolean AStarSearch(Node goal, Node current) {
 
 		// variables to keep track of nodes
@@ -144,7 +156,7 @@ public class Main {
 			neighbors.clear();
 			
 			// get neighbors
-			neighbors = map.AddNeighbors(currentNode);
+			neighbors = grid.AddNeighbors(currentNode);
 
 			// loop through the neighbors array and add possible nodes to expand on
 			for (Node node : neighbors) {
@@ -222,7 +234,7 @@ public class Main {
 			
 			node = path.pop();
 			node.SetInfo("E");
-			map.PrintMap();
+			grid.PrintGrid();
 			
 		}
 		
