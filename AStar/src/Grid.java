@@ -101,35 +101,50 @@ public class Grid {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		// get screen dimensions to display the JFrame appropriately
-		Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();			
-		frame.setExtendedState(Frame.MAXIMIZED_BOTH);
-		frame.setLocation(screenDim.width / 2 - frame.getSize().width / 2, screenDim.height / 2 - frame.getSize().height / 2);
+		Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();		
+		frame.setSize(screenDim.height + 200, screenDim.height - 100);
+		frame.setLocation(screenDim.width / 2 - frame.getWidth() / 2, screenDim.height / 2 - frame.getHeight() / 2);
 		
 		// create a panel for the display information
+		int infoRows = 5;
+		int infoCols = 3;
 		infoPanel = new JPanel();
-		infoPanel.setLayout(new GridLayout(3, 5));
+		infoPanel.setLayout(new GridLayout(infoRows, infoCols, 2, 2));
 		infoPanel.setBackground(Color.WHITE);
-		infoPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 2));
+		infoPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
 		frame.getContentPane().add(infoPanel, BorderLayout.WEST);
+		
+		// create 2D panel holder to be able to slap labels in where we want!
+		JPanel[][] panelHolder = new JPanel[5][3];
+		for (int i = 0; i < infoRows; i++)
+			for (int j = 0; j < infoCols; j++) {
+				
+				panelHolder[i][j] = new JPanel();
+				infoPanel.add(panelHolder[i][j]);
+				
+			}
 		
 		// create instructions labels
 		JLabel[] instructions = {new JLabel("Instructions"), new JLabel("Left Click = Start Node"), new JLabel("Right Click = Goal Node"), new JLabel("Middle Click = Obstacle")};
-		infoPanel.add(instructions[0]);
-		infoPanel.add(instructions[1]);
-		infoPanel.add(instructions[2]);
-		infoPanel.add(instructions[3]);
 		
 		// create displaying information labels
 		JLabel[] information = {new JLabel("Information"), new JLabel("Start Node: "), new JLabel("Goal Node: "), new JLabel("Number of Obstacles: ")};
-		infoPanel.add(information[0]);
-		infoPanel.add(information[1]);
-		infoPanel.add(information[2]);
-		infoPanel.add(information[3]);
+	
+		// add labels where we want them! make it look nice and readable
+		panelHolder[0][1].add(instructions[0]);
+		panelHolder[1][0].add(instructions[1]);
+		panelHolder[1][1].add(instructions[2]);
+		panelHolder[1][2].add(instructions[3]);
+		panelHolder[3][1].add(information[0]);
+		panelHolder[4][0].add(information[1]);
+		panelHolder[4][1].add(information[2]);
+		panelHolder[4][2].add(information[3]);
 		
 		// create a panel for the A* algorithm
 		pathPanel = new JPanel();
 		pathPanel.setLayout(new GridLayout(rows, cols));
 		pathPanel.setBackground(Color.WHITE);
+		pathPanel.setSize(screenDim.height - 100, screenDim.height - 100);
 		frame.getContentPane().add(pathPanel, BorderLayout.CENTER);
 		
 		// create buttons array
