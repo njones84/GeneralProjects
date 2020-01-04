@@ -237,7 +237,7 @@ public class Main {
 		}
 		
 	}
-	
+
 	private static Node GetBestNode(ArrayList<Node> frontier) {
 		
 		// initialize a worst node and worst cost
@@ -301,22 +301,23 @@ public class Main {
 		JLabel startLabel = new JLabel("Start Node [x, y]:");
 		JLabel goalLabel = new JLabel("Goal Node [x, y]:");
 		JLabel obstaclesLabel = new JLabel("Obstacles:");
+		Dimension dim = new Dimension(24, 24);
 		
 		// add text fields to enter A* grid information
 		JTextField gridRows = new JTextField();
 		JTextField gridCols = new JTextField();
-		gridRows.setPreferredSize(new Dimension(24, 24));
-		gridCols.setPreferredSize(new Dimension(24, 24));
+		gridRows.setPreferredSize(dim);
+		gridCols.setPreferredSize(dim);
 		
 		JTextField startXText = new JTextField();
 		JTextField startYText = new JTextField();
-		startXText.setPreferredSize(new Dimension(24, 24));
-		startYText.setPreferredSize(new Dimension(24, 24));
+		startXText.setPreferredSize(dim);
+		startYText.setPreferredSize(dim);
 		
 		JTextField goalXText = new JTextField();
 		JTextField goalYText = new JTextField();
-		goalXText.setPreferredSize(new Dimension(24, 24));
-		goalYText.setPreferredSize(new Dimension(24, 24));
+		goalXText.setPreferredSize(dim);
+		goalYText.setPreferredSize(dim);
 		
 		JTextField obstacles = new JTextField();
 		obstacles.setPreferredSize(new Dimension(48, 24));
@@ -325,6 +326,10 @@ public class Main {
 		JButton button = new JButton("Start Visualization");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed (ActionEvent e) {
+				
+				// if user hasn't entered anything, have user enter something
+				if (gridRows.getText().isEmpty() || gridCols.getText().isEmpty() || startXText.getText().isEmpty() || startYText.getText().isEmpty() || goalXText.getText().isEmpty() || goalYText.getText().isEmpty())
+					JOptionPane.showMessageDialog(null, "Not all information fields were filled out. Please make sure you have entered information for the size of the grid, start node, and goal node.");
 				
 				rows = Integer.parseInt(gridRows.getText());
 				cols = Integer.parseInt(gridCols.getText());
@@ -337,7 +342,7 @@ public class Main {
 				
 				obstacleCount = Integer.parseInt(obstacles.getText());
 				
-				// if start node or goal node is out of bounds, have user re-enter valid information
+				// if start node or goal node is out of bounds, have user enter valid information
 				if (CheckBounds(startX, startY, rows, cols)) {
 					
 					JOptionPane.showMessageDialog(null, "Start node is out of bounds, please enter a new start node.", "Error - Out of bounds", JOptionPane.ERROR_MESSAGE);
@@ -367,31 +372,33 @@ public class Main {
 			}
 		});
 		
-		panelHolder[0][1].setLayout(new GridBagLayout());
+		GridBagLayout gbl = new GridBagLayout();
+		
+		panelHolder[0][1].setLayout(gbl);
 		panelHolder[0][1].add(gridSizeLabel);
 		
-		panelHolder[0][2].setLayout(new GridBagLayout());
+		panelHolder[0][2].setLayout(gbl);
 		panelHolder[0][2].add(gridRows);
 		panelHolder[0][2].add(gridCols);
 		
-		panelHolder[1][1].setLayout(new GridBagLayout());
+		panelHolder[1][1].setLayout(gbl);
 		panelHolder[1][1].add(startLabel);
 		
-		panelHolder[2][1].setLayout(new GridBagLayout());
+		panelHolder[2][1].setLayout(gbl);
 		panelHolder[2][1].add(goalLabel);
 		
-		panelHolder[3][1].setLayout(new GridBagLayout());
+		panelHolder[3][1].setLayout(gbl);
 		panelHolder[3][1].add(obstaclesLabel);
 		
-		panelHolder[1][2].setLayout(new GridBagLayout());
+		panelHolder[1][2].setLayout(gbl);
 		panelHolder[1][2].add(startXText);
 		panelHolder[1][2].add(startYText);
 		
-		panelHolder[2][2].setLayout(new GridBagLayout());
+		panelHolder[2][2].setLayout(gbl);
 		panelHolder[2][2].add(goalXText);
 		panelHolder[2][2].add(goalYText);
 		
-		panelHolder[3][2].setLayout(new GridBagLayout());
+		panelHolder[3][2].setLayout(gbl);
 		panelHolder[3][2].add(obstacles);
 		startPanel.add(button);
 		
