@@ -1,6 +1,10 @@
 import java.util.*;
 import java.awt.*;
+import java.io.IOException;
+
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class Main {
 
@@ -9,8 +13,10 @@ public class Main {
 	private static Grid grid;
 	private static Scanner input = new Scanner(System.in);
 	
-	private static int x;
-	private static int y;
+	private static int startX;
+	private static int startY;
+	private static int goalX;
+	private static int goalY;
 	private static int rows;
 	private static int cols;
 	private static int obstacleCount;
@@ -21,6 +27,8 @@ public class Main {
 		int choice = 1;
 
 		while (choice == 1) {
+			
+			GridInformation();
 			
 			// get amount of rows
 			System.out.println("How many rows would you like in your grid? (Please be generous cause memory can be an issue!): ");
@@ -42,53 +50,51 @@ public class Main {
 			// block the grid after it is generated
 			System.out.println("Adding roadblocks to cells.");
 			grid.BlockGrid();
-
-			Visualize();
 			
 			// ask the user to enter the start node's X and Y value
 			System.out.print("Please enter a starting node X value (0-" + (rows - 1) + "): ");
-			x = input.nextInt();
+			startX = input.nextInt();
 
 			System.out.print("Please enter a starting node Y value (0-" + (cols - 1) + "): ");
-			y = input.nextInt();
+			startY = input.nextInt();
 			System.out.println();
 
-			while (CheckBounds(x, y, rows, cols)) {
+			while (CheckBounds(startX, startY, rows, cols)) {
 
 				System.out.println("Invalid entry.");
 
 				System.out.print("Please enter a new X value for your start node (0-" + (rows - 1) + "...): ");
-				x = input.nextInt();
+				startX = input.nextInt();
 
 				System.out.print("Please enter a new Y value for your start node (0-" + (cols - 1) + "...): ");
-				y = input.nextInt();
+				startY = input.nextInt();
 
 			}
 
-			startNode = grid.GetNode(x, y);
+			startNode = grid.GetNode(startX, startY);
 			startNode.SetInfo("S");
 
 			// ask the user to enter the goal node's X and Y value
 			System.out.print("Please enter a goal node X value (0-" + (rows - 1) + "): ");
-			x = input.nextInt();
+			goalX = input.nextInt();
 
 			System.out.print("Please enter a goal node Y value (0-" + (cols - 1) + "): ");
-			y = input.nextInt();
+			goalY = input.nextInt();
 			System.out.println();
 
-			while (CheckBounds(x, y, rows, cols)) {
+			while (CheckBounds(goalX, goalY, rows, cols)) {
 
 				System.out.println("Invalid entry.");
 
 				System.out.print("Please enter a new X value for your goal node (0-" + (rows - 1) + "...): ");
-				x = input.nextInt();
+				goalX = input.nextInt();
 
 				System.out.print("Please enter a new Y value for your goal node (0-" + (cols - 1) + "...): ");
-				y = input.nextInt();
+				goalY = input.nextInt();
 
 			}
 
-			goalNode = grid.GetNode(x, y);
+			goalNode = grid.GetNode(goalX, goalY);
 			goalNode.SetInfo("G");
 
 			// print update grid
@@ -113,14 +119,6 @@ public class Main {
 			choice = input.nextInt();
 
 		}
-	}
-
-	public static void Visualize() {
-		
-		// initiate visualization of the grid
-		grid.VisualizeGrid();
-		
-		
 	}
 	
 	public static boolean AStarSearch(Node goal, Node current) {
@@ -260,6 +258,214 @@ public class Main {
         // clear the frontier for incoming better nodes and return the best current node
         frontier.clear();
         return best;
+		
+	}
+
+	private static void GridInformation() {
+		
+		// initialize the frame to gather board information
+		JFrame frame = new JFrame("Board Information");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
+		
+		// get screen dimensions to display the JFrame appropriately
+		Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();		
+		frame.setSize(screenDim.height / 2, screenDim.height / 2);
+		frame.setLocation(screenDim.width / 2 - frame.getWidth() / 2, screenDim.height / 2 - frame.getHeight() / 2);
+		
+		// create a panel for the display information
+		int infoRows = 4;
+		int infoCols = 4;
+		JPanel infoPanel = new JPanel();
+		infoPanel.setLayout(new GridLayout(infoRows, infoCols, 2, 2));
+		infoPanel.setBackground(Color.WHITE);
+		frame.getContentPane().add(infoPanel, BorderLayout.CENTER);
+		
+		// panel just for start button
+		JPanel startPanel = new JPanel();
+		startPanel.setBackground(Color.WHITE);
+		frame.getContentPane().add(startPanel, BorderLayout.SOUTH);
+		
+		// create 2D panel holder to be able to slap labels in where we want!
+		JPanel[][] panelHolder = new JPanel[infoRows][infoCols];
+		for (int i = 0; i < infoRows; i++)
+			for (int j = 0; j < infoCols; j++) {
+				
+				panelHolder[i][j] = new JPanel();
+				panelHolder[i][j].setBackground(Color.WHITE);
+				infoPanel.add(panelHolder[i][j]);
+				
+			}
+		
+		// add labels for the text fields
+		JLabel gridSizeLabel = new JLabel("Size of Grid [x, y]:");
+		JLabel startLabel = new JLabel("Start Node [x, y]:");
+		JLabel goalLabel = new JLabel("Goal Node [x, y]:");
+		JLabel obstaclesLabel = new JLabel("Obstacles:");
+		
+		// add text fields to enter A* grid information
+		JTextField gridRows = new JTextField();
+		JTextField gridCols = new JTextField();
+		gridRows.setPreferredSize(new Dimension(24, 24));
+		gridCols.setPreferredSize(new Dimension(24, 24));
+		
+		JTextField startXText = new JTextField();
+		JTextField startYText = new JTextField();
+		startXText.setPreferredSize(new Dimension(24, 24));
+		startYText.setPreferredSize(new Dimension(24, 24));
+		
+		JTextField goalXText = new JTextField();
+		JTextField goalYText = new JTextField();
+		goalXText.setPreferredSize(new Dimension(24, 24));
+		goalYText.setPreferredSize(new Dimension(24, 24));
+		
+		JTextField obstacles = new JTextField();
+		obstacles.setPreferredSize(new Dimension(48, 24));
+		
+		// initialize the button to start the visualization
+		JButton button = new JButton("Start Visualization");
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed (ActionEvent e) {
+				
+				rows = Integer.parseInt(gridRows.getText());
+				cols = Integer.parseInt(gridCols.getText());
+				
+				startX = Integer.parseInt(startXText.getText());
+				startY = Integer.parseInt(startYText.getText());
+				
+				goalX = Integer.parseInt(goalXText.getText());
+				goalY = Integer.parseInt(goalYText.getText());
+				
+				obstacleCount = Integer.parseInt(obstacles.getText());
+				
+				// if start node or goal node is out of bounds, have user re-enter valid information
+				if (CheckBounds(startX, startY, rows, cols)) {
+					
+					JOptionPane.showMessageDialog(null, "Start node is out of bounds, please enter a new start node.", "Error - Out of bounds", JOptionPane.ERROR_MESSAGE);
+					startXText.setText("");
+					startYText.setText("");
+					
+				}
+				else if (CheckBounds(goalX, goalY, rows, cols)) {
+					
+					JOptionPane.showMessageDialog(null, "Goal node is out of bounds, please enter a new goal node.", "Error - Out of bounds", JOptionPane.ERROR_MESSAGE);
+					goalXText.setText("");
+					goalYText.setText("");
+					
+				}
+				else if (CheckBounds(startX, startY, rows, cols) && CheckBounds(goalX, goalY, rows, cols)) {
+					
+					JOptionPane.showMessageDialog(null, "Both nodes are out of bounds, please enter new nodes.", "Error - Out of bounds", JOptionPane.ERROR_MESSAGE);
+					startXText.setText("");
+					startYText.setText("");
+					goalXText.setText("");
+					goalYText.setText("");
+					
+				}
+				
+				VisualizeGrid();
+				
+			}
+		});
+		
+		panelHolder[0][1].setLayout(new GridBagLayout());
+		panelHolder[0][1].add(gridSizeLabel);
+		
+		panelHolder[0][2].setLayout(new GridBagLayout());
+		panelHolder[0][2].add(gridRows);
+		panelHolder[0][2].add(gridCols);
+		
+		panelHolder[1][1].setLayout(new GridBagLayout());
+		panelHolder[1][1].add(startLabel);
+		
+		panelHolder[2][1].setLayout(new GridBagLayout());
+		panelHolder[2][1].add(goalLabel);
+		
+		panelHolder[3][1].setLayout(new GridBagLayout());
+		panelHolder[3][1].add(obstaclesLabel);
+		
+		panelHolder[1][2].setLayout(new GridBagLayout());
+		panelHolder[1][2].add(startXText);
+		panelHolder[1][2].add(startYText);
+		
+		panelHolder[2][2].setLayout(new GridBagLayout());
+		panelHolder[2][2].add(goalXText);
+		panelHolder[2][2].add(goalYText);
+		
+		panelHolder[3][2].setLayout(new GridBagLayout());
+		panelHolder[3][2].add(obstacles);
+		startPanel.add(button);
+		
+		frame.pack();
+		frame.setVisible(true);
+		
+	}
+	
+	private static void VisualizeGrid() {
+		
+		// initialize the frame for the board
+		JFrame frame = new JFrame("A* Visualization");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		// get screen dimensions to display the JFrame appropriately
+		Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();		
+		frame.setSize(screenDim.height + 200, screenDim.height - 100);
+		frame.setLocation(screenDim.width / 2 - frame.getWidth() / 2, screenDim.height / 2 - frame.getHeight() / 2);
+		
+		// create a panel for the display information
+		int infoRows = 5;
+		int infoCols = 3;
+		JPanel infoPanel = new JPanel();
+		infoPanel.setLayout(new GridLayout(infoRows, infoCols, 2, 2));
+		infoPanel.setBackground(Color.WHITE);
+		infoPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3));
+		frame.getContentPane().add(infoPanel, BorderLayout.WEST);
+		
+		// create 2D panel holder to be able to slap labels in where we want!
+		JPanel[][] panelHolder = new JPanel[infoRows][infoCols];
+		for (int i = 0; i < infoRows; i++)
+			for (int j = 0; j < infoCols; j++) {
+				
+				panelHolder[i][j] = new JPanel();
+				infoPanel.add(panelHolder[i][j]);
+				
+			}
+		
+		// create instructions labels
+		JLabel[] instructions = {new JLabel("Instructions"), new JLabel("Left Click = Start Node"), new JLabel("Right Click = Goal Node"), new JLabel("Middle Click = Obstacle")};
+		
+		// create displaying information labels
+		JLabel[] information = {new JLabel("Information"), new JLabel("Start Node: "), new JLabel("Goal Node: "), new JLabel("Number of Obstacles: ")};
+	
+		// add labels where we want them! make it look nice and readable
+		panelHolder[0][1].add(instructions[0]);
+		panelHolder[1][0].add(instructions[1]);
+		panelHolder[1][1].add(instructions[2]);
+		panelHolder[1][2].add(instructions[3]);
+		panelHolder[3][1].add(information[0]);
+		panelHolder[4][0].add(information[1]);
+		panelHolder[4][1].add(information[2]);
+		panelHolder[4][2].add(information[3]);
+		
+		// create a panel for the A* algorithm
+		JPanel pathPanel = new JPanel();
+		pathPanel.setLayout(new GridLayout(rows, cols));
+		pathPanel.setBackground(Color.WHITE);
+		pathPanel.setSize(screenDim.height - 100, screenDim.height - 100);
+		frame.getContentPane().add(pathPanel, BorderLayout.CENTER);
+		
+		// create buttons array
+		JButton[][] buttons = new JButton[rows][cols];
+		
+		// each tile will be a button for more functionality
+		for (int i = 0; i < rows; i++)
+			for (int k = 0; k < cols; k++) {
+						
+				buttons[i][k] = new Button();
+				pathPanel.add(buttons[i][k]);
+						
+			}
+		
+		frame.setVisible(true);
 		
 	}
 }

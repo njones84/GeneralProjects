@@ -21,9 +21,9 @@ public class Node {
 	
 	public Node(int x, int y) {
 		
-		//h = 0;
-		//g = 0;
-		//f = 0;
+		h = 0;
+		g = 0;
+		f = 0;
 		gridX = x;
 		gridY = y;
 		navigable = true;
