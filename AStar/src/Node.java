@@ -1,4 +1,4 @@
-public class Node {
+public class Node implements Comparable<Node>{
 
 	private String info;
 	private int h;
@@ -28,6 +28,13 @@ public class Node {
 		gridY = y;
 		navigable = true;
 		info = "";
+		
+	}
+	
+	@Override
+	public int compareTo(Node other) {
+		
+		return this.f - other.f;
 		
 	}
 	

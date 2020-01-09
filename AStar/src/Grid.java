@@ -1,6 +1,6 @@
 import java.util.Random;
 import java.util.ArrayList;
-
+import java.util.PriorityQueue;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -84,31 +84,32 @@ public class Grid {
 			for (int j = 0; j < cols; j++) {
 
 				if (grid[i][j].GetInfo().equals("S"))
-					System.out.print("[S] ");
+					System.out.print("[S]");
 				else if (grid[i][j].GetInfo().equals("G"))
-					System.out.print("[G] ");
+					System.out.print("[G]");
 				else if (grid[i][j].GetInfo().equals("E"))
-					System.out.print("[E] ");
+					System.out.print("[E]");
 				else if (grid[i][j].GetTraversable())
-					System.out.print("[ ] ");
+					System.out.print("[ ]");
 				else
-					System.out.print("[X] ");
+					System.out.print("[X]");
 
 			}
 			System.out.println();
 		}
 	}
 
-	public ArrayList<Node> AddNeighbors(Node node) {
+	public PriorityQueue<Node> AddNeighbors(Node node) {
 
-		// create new arraylist to hold neighbors
-		ArrayList<Node> neighbors = new ArrayList();
+		// create new queue to hold neighbors
+		PriorityQueue<Node> neighbors = new PriorityQueue<Node>();
 
 		// access and store the current nodes position
 		int x = node.GetX();
 		int y = node.GetY();
 
 		// check for neighbors
+		// down
 		if (x + 1 < rows)
 			if (grid[x + 1][y].GetTraversable())
 				neighbors.add(grid[x + 1][y]);
