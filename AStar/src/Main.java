@@ -26,121 +26,6 @@ public class Main {
 	
 	}
 	
-	public static boolean AStarSearch(Node goal, Node start) {
-
-		// variables to keep track of nodes
-		PriorityQueue<Node> frontier = new PriorityQueue<Node>();
-		PriorityQueue<Node> fringe = new PriorityQueue<Node>();
-		PriorityQueue<Node> neighbors = new PriorityQueue<Node>();
-		Node currentNode = start;
-
-		// set the current node's distance and visual information
-		// (Manhattan Distance)
-		currentNode.SetHeuristicCost(Math.max(Math.abs(currentNode.GetX() - goalX), Math.abs(currentNode.GetY() - goalY)));
-		currentNode.SetPathCost(0);
-		currentNode.SetSumCost(currentNode.GetHeursticCost() + currentNode.GetPathCost());
-		currentNode.SetInfo("S");
-
-		// add current node to the frontier
-		frontier.add(currentNode);
-
-		// while the frontier is not empty
-		while (!frontier.isEmpty()) {
-
-			// get the new node each loop and add it to the fringe
-			// clear the frontier and neighbors so the current node has a new start
-			currentNode = frontier.poll();
-			fringe.add(currentNode);
-
-			// iteration after we pop the first one off
-			frontier.clear();
-			neighbors.clear();
-			
-			// get neighbors
-			neighbors = grid.AddNeighbors(currentNode);
-
-			// loop through the neighbors array and add possible nodes to expand on
-			for (Node node : neighbors) {
-
-				// check if goal node
-				if (node == goal) {
-					
-					node.SetParent(currentNode);
-					return true;
-					
-				}
-
-				// check if the fringe contains this node or if the node can be navigated, if it does skip it
-				if (fringe.contains(node) || !node.GetTraversable())
-					continue;
-
-				// set the child's respective H, G, and F costs and check for diagonal
-				node.SetHeuristicCost(Math.max(Math.abs(node.GetX() - goalX), Math.abs(node.GetY() - goalY)));
-				node.SetPathCost(currentNode.GetPathCost() + 1);
-				node.SetSumCost(node.GetHeursticCost() + node.GetPathCost());
-
-				if (frontier.contains(node))
-					if (node.GetSumCost() > currentNode.GetSumCost())
-						continue;
-
-				// add the child to the frontier
-				frontier.add(node);
-				node.SetParent(currentNode);
-				
-				// debug statement
-				System.out.println("Adding child: " + node.GetSumCost() + " [" + node.GetX() + ", " + node.GetY() + "]");
-
-			}
-			System.out.println();
-		}
-
-		// if all else fails, return false
-		return false;
-
-	}
-
-	private static boolean CheckBounds(int x, int y, int rows, int cols) {
-
-		if (x >= rows || y >= cols || x < 0 || y < 0)
-			return true;
-
-		return false;
-
-	}
-	
-	private static void ConstructPath(Node node) {
-		
-		// create new path
-		Stack<Node> path = new Stack<Node>();
-		
-		// while the nodes have parents, add them to the path
-		while (node.GetParent() != null) {
-			
-			node = node.GetParent();
-			path.push(node);
-			
-		}
-		
-		// pop first node off since its the start node
-		path.pop();
-		
-		// keep track of iteration number
-		int count = 1;
-		
-		// traverse through the stack to show the path in iterations
-		while (!path.isEmpty()) {
-			
-			System.out.println("Current iteration of A* - " + count);
-			count++;
-			
-			node = path.pop();
-			node.SetInfo("E");
-			grid.PrintGrid();
-			
-		}
-		
-	}
-	
 	private static void DisplayChoice() {
 		
 		// initialize the frame to show user visualization options
@@ -255,6 +140,7 @@ public class Main {
 
 			goalNode = grid.GetNode(goalX, goalY);
 			goalNode.SetInfo("G");
+			goalNode.SetTraversable(true);
 
 			// print update grid
 			System.out.println("Displaying grid. Cells with an X cannot be traversed.");
@@ -265,7 +151,7 @@ public class Main {
 				System.out.println("Already on goal node...");
 			else {
 				System.out.println("Starting A* search algorithm.");
-				found = AStarSearch(goalNode, startNode);
+				found = AStarSearch(startNode, goalNode);
 
 				if (found)
 					ConstructPath(goalNode);
@@ -279,7 +165,7 @@ public class Main {
 
 		}
 	}
-	
+
 	private static void GridInformation() {
 		
 		// initialize the frame to gather board information
@@ -496,5 +382,115 @@ public class Main {
 		
 		frame.setVisible(true);
 		
+	}
+	
+	public static boolean AStarSearch(Node start, Node goal) {
+
+		// variables to keep track of nodes
+		PriorityQueue<Node> frontier = new PriorityQueue<Node>();
+		PriorityQueue<Node> fringe = new PriorityQueue<Node>();
+		PriorityQueue<Node> neighbors = new PriorityQueue<Node>();
+		Node currentNode = start;
+
+		// set the current node's distance and visual information
+		// (Diagonal Distance)
+		currentNode.SetHeuristicCost(Math.max(Math.abs(currentNode.GetX() - goalX), Math.abs(currentNode.GetY() - goalY)));
+		currentNode.SetPathCost(0);
+		currentNode.SetSumCost(currentNode.GetHeursticCost() + currentNode.GetPathCost());
+		currentNode.SetInfo("S");
+
+		// add current node to the frontier
+		frontier.add(currentNode);
+
+		// while the frontier is not empty
+		while (!frontier.isEmpty()) {
+
+			// get the new node each loop and add it to the fringe
+			currentNode = frontier.poll();
+			fringe.add(currentNode);
+			
+			// get neighbors
+			neighbors = grid.AddNeighbors(currentNode);
+			
+			// loop through the neighbors queue
+			for (Node node : neighbors) {
+
+				// check if goal node
+				if (node == goal) {
+
+					node.SetParent(currentNode);
+					return true;
+					
+				}
+				
+				// check if the fringe contains this node, if it does skip it
+				if (fringe.contains(node))
+					continue;
+					
+				// if frontier contains this neighbor, check if its path cost is greater than or equal to the current node (the most optimal so far), and if so, then skip it since it is not as optimal
+				if (frontier.contains(node))
+					if (node.GetPathCost() >= currentNode.GetPathCost())
+						continue;
+						
+				// set the child's respective H, G, and F costs and check for diagonal
+				node.SetHeuristicCost(Math.max(Math.abs(node.GetX() - goalX), Math.abs(node.GetY() - goalY)));
+				node.SetPathCost(currentNode.GetPathCost() + 1);
+				node.SetSumCost(node.GetHeursticCost() + node.GetPathCost());
+
+				// add the child to the frontier
+				frontier.add(node);
+				node.SetParent(currentNode);
+				
+				// debug statement
+				System.out.println("Adding child: " + node.GetSumCost() + " [" + node.GetX() + ", " + node.GetY() + "]");
+
+			}
+			System.out.println();
+		}
+
+		// if all else fails, return false
+		return false;
+
+	}
+
+	private static boolean CheckBounds(int x, int y, int rows, int cols) {
+
+		if (x >= rows || y >= cols || x < 0 || y < 0)
+			return true;
+
+		return false;
+
+	}
+	
+	private static void ConstructPath(Node node) {
+		
+		// create new path
+		Stack<Node> path = new Stack<Node>();
+		
+		// while the nodes have parents, add them to the path
+		while (node.GetParent() != null) {
+			
+			node = node.GetParent();
+			path.push(node);
+			
+		}
+		
+		// pop first node off since its the start node
+		path.pop();
+		
+		// keep track of iteration number
+		int count = 1;
+		
+		// traverse through the stack to show the path in iterations
+		while (!path.isEmpty()) {
+			
+			System.out.println("Current iteration of A* - " + count);
+			count++;
+			
+			node = path.pop();
+			node.SetInfo("E");
+			grid.PrintGrid();
+			
+		}	
 	}
 }
