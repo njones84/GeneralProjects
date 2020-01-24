@@ -7,10 +7,12 @@ Examples of projects you will find in here are: A* pathfinding. Game projects in
 
 ## Directory
 * [A* in Java](/AStar)
-  1. Main.java - contains the A* algorithm and is the basis of the program.
+  1. Main.java - contains the code to set up a basic frame to allow the user to choose between console or grid visualization.
   2. Grid.java - contains grid constructors and helpful functions for the grid to help generate, block, etc..
   3. Node.java - contains node constructors and multiple getter/setter functions.
-  4. Button.java - modified Button class from javax.swing.*
+  4. Pathfinder.java - contains the A* constructors and algorithm.
+  5. GridPanel.java - custom JPanel class that has a modified paint component and node/obstacle placement with the mouse.
+  6. Frame.java - sets up the frame for the grid visualization. includes instructions and run/clear buttons for the algorithm.
 * [A* in Unity/C#](/FormationalMovement)
   1. PlayerMovement.cs - this script utilizes A* to move around in the game world and to create obstacles. 
   2. FormationMovement.cs - this script allows the user to add entities that will follow an invisible leader. Only the leader uses A*.
