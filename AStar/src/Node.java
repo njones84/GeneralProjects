@@ -6,28 +6,29 @@ public class Node implements Comparable<Node>{
 	private int f;
 	private int gridX;
 	private int gridY;
-	private boolean navigable;
+	private boolean traversable;
+	
 	private Node parent;
 	
 	public Node() {
 		
-		h = 0;
-		g = 0;
-		f = 0;
-		navigable = true;
-		info = "";
+		this.h = 0;
+		this.g = 0;
+		this.f = 0;
+		this.traversable = true;
+		this.info = "";
 		
 	}
 	
 	public Node(int x, int y) {
 		
-		h = 0;
-		g = 0;
-		f = 0;
-		gridX = x;
-		gridY = y;
-		navigable = true;
-		info = "";
+		this.h = 0;
+		this.g = 0;
+		this.f = 0;
+		this.gridX = x;
+		this.gridY = y;
+		this.traversable = true;
+		this.info = "";
 		
 	}
 	
@@ -39,21 +40,21 @@ public class Node implements Comparable<Node>{
 	}
 	
 	// get functions
-	public int GetHeursticCost() { return h; }
-	public int GetPathCost() { return g; }
-	public int GetSumCost() { return f; }
-	public int GetX() { return gridX; }
-	public int GetY() { return gridY; }
-	public boolean GetTraversable() { return navigable; }
-	public String GetInfo() { return info; }
-	public Node GetParent( ) { return parent; }
+	public int getHeursticCost() { return h; }
+	public int getPathCost() { return g; }
+	public int getSumCost() { return f; }
+	public int getX() { return gridX; }
+	public int getY() { return gridY; }
+	public boolean getTraversable() { return traversable; }
+	public String getInfo() { return info; }
+	public Node getParent( ) { return parent; }
 	
 	// set functions
-	public void SetHeuristicCost(int other) { h = other; }
-	public void SetPathCost(int other) { g = other; }
-	public void SetSumCost(int other) { f = other; }
-	public void SetTraversable(boolean other) { navigable = other; }
-	public void SetInfo(String other) { info = other; }
-	public void SetParent(Node other) { parent = other; }
+	public void setHeuristicCost(int other) { h = other; }
+	public void setPathCost(int other) { g = other; }
+	public void setSumCost(int other) { f = other; }
+	public void setTraversable(boolean other) { traversable = other; }
+	public void setInfo(String other) { info = other; }
+	public void setParent(Node other) { parent = other; }
 
 }
