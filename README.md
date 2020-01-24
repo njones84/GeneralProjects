@@ -11,8 +11,8 @@ Examples of projects you will find in here are: A* pathfinding. Game projects in
   2. Grid.java - contains grid constructors and helpful functions for the grid to help generate, block, etc..
   3. Node.java - contains node constructors and multiple getter/setter functions.
   4. Pathfinder.java - contains the A* constructors and algorithm.
-  5. GridPanel.java - custom JPanel class that has a modified paint component and node/obstacle placement with the mouse.
-  6. Frame.java - custom JFrame class that sets up the frame for the grid visualization. includes instructions and run/clear buttons for the algorithm.
+  5. GridPanel.java - custom JPanel class that has a modified paint component and node/obstacle placement.
+  6. Frame.java - custom JFrame class that sets up the frame for the grid visualization.
 * [A* in Unity/C#](/FormationalMovement)
   1. PlayerMovement.cs - this script utilizes A* to move around in the game world and to create obstacles. 
   2. FormationMovement.cs - this script allows the user to add entities that will follow an invisible leader. Only the leader uses A*.
