@@ -49,14 +49,14 @@ public class Frame extends JFrame {
 		
 		// get screen dimensions to display the JFrame appropriately
 		Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();		
-		setSize(screenDim.height - 100, screenDim.height - 100);
-		setLocation(screenDim.width / 2 - getWidth() / 2, screenDim.height / 2 - getHeight() / 2);
+		setSize(screenDim.width, screenDim.height);
+		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		
 		// set the layout of our frame
 		getContentPane().setLayout(new GridLayout());
 		
 		// set up the left and right panel for our split pane and get the Pathfinder
-		gridPanel = new GridPanel((int) getHeight() / 4 * 3, screenDim.height - 100);
+		gridPanel = new GridPanel((int) getWidth() / 5 * 4, getHeight());
 		infoPanel = new JPanel(new GridLayout());
 	
 		// get the Pathfinder object for button functionality later
@@ -70,7 +70,7 @@ public class Frame extends JFrame {
 		// set up the split pane for our frame so we can put stuff side by side
 		frameSplitPane = new JSplitPane();
 		frameSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-		frameSplitPane.setDividerLocation((int) (getWidth() / 4));
+		frameSplitPane.setDividerLocation((int) (getWidth() / 5));
 		frameSplitPane.setLeftComponent(infoPanel);
 		frameSplitPane.setRightComponent(scrollPane);
 		getContentPane().add(frameSplitPane);
@@ -114,7 +114,6 @@ public class Frame extends JFrame {
 					}
 					
 					gridPanel.repaint();
-					gridPanel.revalidate();
 					
 				}
 			}

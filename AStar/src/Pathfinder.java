@@ -131,9 +131,9 @@ public class Pathfinder {
 	
 	}
 	
-	public void frameSetUp() {
+	public void frameSetUp(int rows, int cols) {
 		
-		this.grid = new Grid(this.panel.getWidth() / this.panel.getNodeSize(), this.panel.getHeight() / this.panel.getNodeSize(), 0);
+		this.grid = new Grid(rows, cols, 0);
 		grid.generateGrid();
 		
 	}

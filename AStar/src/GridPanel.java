@@ -14,6 +14,8 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 	private int width;
 	private int height;
 	private int nodeSize;
+	private int minNodeSize;
+	private int maxNodeSize;
 	
 	private Node start;
 	private Node goal;
@@ -24,13 +26,15 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 		this.width = width;
 		this.height = height;
 		this.nodeSize = 20;
+		this.minNodeSize = 10;
+		this.maxNodeSize = 30;
 		
 		this.start = null;
 		this.goal = null;
 		this.pathfinder = new Pathfinder(this);
 		
 		// set up grid
-		pathfinder.frameSetUp();
+		pathfinder.frameSetUp((int) this.width / this.nodeSize, (int) this.height / this.nodeSize);
 		
 		addMouseListener(this);
 		addMouseWheelListener(this);
@@ -49,8 +53,8 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 		
 		// draw borders
 		g.setColor(Color.WHITE);
-		for (int i = 0; i < width / nodeSize; i++)
-			for (int j = 0; j < height / nodeSize; j++)
+		for (int i = 0; i < (int) width / nodeSize; i++)
+			for (int j = 0; j < (int) height / nodeSize; j++)
 				g.fillRect(i * nodeSize + 1, j * nodeSize + 1, nodeSize - 1, nodeSize - 1);
 		
 		// draw frontier
@@ -95,16 +99,15 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 	public void mouseWheelMoved(MouseWheelEvent e) {
 
 		// zooming in
-		if (e.getWheelRotation() < 0 && nodeSize <= 30)		
+		if (e.getWheelRotation() < 0 && nodeSize <= maxNodeSize)		
 			nodeSize += 1;
 		// zooming out
-		else if (e.getWheelRotation() > 0 && nodeSize >= 10)			
+		else if (e.getWheelRotation() > 0 && nodeSize >= minNodeSize)			
 			nodeSize -= 1;
 
-		pathfinder.frameSetUp();
+		pathfinder.frameSetUp((int) this.width / this.nodeSize, (int) this.height / this.nodeSize);
 		resetEverything();
 		repaint();
-		revalidate();
 		
 	}
 
