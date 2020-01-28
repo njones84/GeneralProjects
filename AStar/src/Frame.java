@@ -6,6 +6,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
 /** Useful references.
@@ -17,12 +18,12 @@ public class Frame extends JFrame {
 
 	private JSplitPane frameSplitPane;
 	private JSplitPane infoPanelSplitPane;
+	private JScrollPane scrollPane;
 	private GridPanel gridPanel;
 	private JPanel infoPanel;
 	private JPanel instructionPanel;
 	private JPanel optionPanel;
 	private JButton runButton;
-	private JButton setButton;
 	private JButton clearButton;
 	
 	private Pathfinder pathfinder;
@@ -31,12 +32,12 @@ public class Frame extends JFrame {
 		
 		frameSplitPane = null;
 		infoPanelSplitPane = null;
+		scrollPane = null;
 		gridPanel = null;
 		infoPanel = null;
 		instructionPanel = null;
 		optionPanel = null;
 		runButton = null;
-		setButton = null;
 		clearButton = null;
 		
 	}
@@ -55,20 +56,28 @@ public class Frame extends JFrame {
 		getContentPane().setLayout(new GridLayout());
 		
 		// set up the left and right panel for our split pane and get the Pathfinder
-		gridPanel = new GridPanel(this, (int) getHeight() / 4 * 3, screenDim.height - 100);
+		gridPanel = new GridPanel((int) getHeight() / 4 * 3, screenDim.height - 100);
+		infoPanel = new JPanel(new GridLayout());
+	
+		// get the Pathfinder object for button functionality later
 		pathfinder = gridPanel.getPathfinder();
 		
-		infoPanel = new JPanel(new GridLayout());
-		instructionPanel = new JPanel();
-		optionPanel = new JPanel();
+		// create scroll pane
+		scrollPane = new JScrollPane();
+		scrollPane.setViewportBorder(null);
+		scrollPane.setViewportView(gridPanel);
 		
 		// set up the split pane for our frame so we can put stuff side by side
 		frameSplitPane = new JSplitPane();
 		frameSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
 		frameSplitPane.setDividerLocation((int) (getWidth() / 4));
 		frameSplitPane.setLeftComponent(infoPanel);
-		frameSplitPane.setRightComponent(gridPanel);
+		frameSplitPane.setRightComponent(scrollPane);
 		getContentPane().add(frameSplitPane);
+		
+		// set up the top and bottom panels of the info panel
+		instructionPanel = new JPanel();
+		optionPanel = new JPanel();
 		
 		// set up the split pane for the info panel
 		infoPanelSplitPane = new JSplitPane();
@@ -83,7 +92,7 @@ public class Frame extends JFrame {
 		runButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				// show errors, if no errors run the pathfinder
+				// show errors, if no errors, run the pathfinder
 				if (pathfinder.getStartNode() == null && pathfinder.getGoalNode() == null)
 					JOptionPane.showMessageDialog(null, "Please have a start and goal node before running the algorithm.", "Error - Start/Goal missing", JOptionPane.ERROR_MESSAGE);
 				else if (pathfinder.getStartNode() == null)
@@ -92,16 +101,21 @@ public class Frame extends JFrame {
 					JOptionPane.showMessageDialog(null, "Please have a goal node before running the algorithm.", "Error - Goal missing", JOptionPane.ERROR_MESSAGE);
 				else {
 					
-					boolean found = pathfinder.AStarSearch();
+					boolean found = pathfinder.aStar();
 					
-					// show only path if a solution is found
-					if (found) {
-					
-						pathfinder.ConstructPath();
+					// show path is solution is found
+					if (found)			
+						pathfinder.constructPath();
+					else {
+						
+						JOptionPane.showMessageDialog(null, "Path not found due to obstacles.", "No Path", JOptionPane.INFORMATION_MESSAGE);
+						pathfinder.deletePath();
 						
 					}
 					
 					gridPanel.repaint();
+					gridPanel.revalidate();
+					
 				}
 			}
 		});
@@ -111,12 +125,7 @@ public class Frame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				
 				// clear everything (start node, goal node, frontier, fringe, path, obstacles)
-				pathfinder.setStartNode(null);
-				pathfinder.setGoalNode(null);
-				pathfinder.deleteFrontier();
-				pathfinder.deleteFringe();
-				pathfinder.deletePath();
-				pathfinder.deleteAllObstacles();
+				gridPanel.resetEverything();
 				gridPanel.repaint();
 				
 			}
@@ -128,5 +137,8 @@ public class Frame extends JFrame {
 		setVisible(true);
 		
 	}
+
+	// getters
+	public JScrollPane getJScrollPane() { return scrollPane; }
 	
 }

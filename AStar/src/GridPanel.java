@@ -5,7 +5,6 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -19,9 +18,8 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 	private Node start;
 	private Node goal;
 	private Pathfinder pathfinder;
-	private Frame frame;
 	
-	public GridPanel(Frame frame, int width, int height) {
+	public GridPanel(int width, int height) {
 		
 		this.width = width;
 		this.height = height;
@@ -30,16 +28,13 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 		this.start = null;
 		this.goal = null;
 		this.pathfinder = new Pathfinder(this);
-		this.frame = frame;
 		
 		// set up grid
-		pathfinder.FrameSetUp();
+		pathfinder.frameSetUp();
 		
 		addMouseListener(this);
 		addMouseWheelListener(this);
 		addMouseMotionListener(this);
-
-		this.repaint();
 		
 	}
 	
@@ -50,14 +45,12 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 		
 		// draw grid
 		g.setColor(Color.BLACK);
-		for (int i = 0; i < width / nodeSize - 1; i++)
-			for (int j = 0; j < height / nodeSize - 1; j++)
-				g.drawRect(i * nodeSize, j * nodeSize, nodeSize, nodeSize);
+		g.fillRect(0, 0, width - 1, height - 1);
 		
 		// draw borders
 		g.setColor(Color.WHITE);
-		for (int i = 0; i < width / nodeSize - 1; i++)
-			for (int j = 0; j < height / nodeSize - 1; j++)
+		for (int i = 0; i < width / nodeSize; i++)
+			for (int j = 0; j < height / nodeSize; j++)
 				g.fillRect(i * nodeSize + 1, j * nodeSize + 1, nodeSize - 1, nodeSize - 1);
 		
 		// draw frontier
@@ -65,24 +58,18 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 		if (pathfinder.getFrontier() != null)
 			for (Node node : pathfinder.getFrontier())
 				g.fillRect(node.getX() * nodeSize + 1, node.getY() * nodeSize + 1, nodeSize - 1, nodeSize - 1);
-		else
-			System.out.print("Frontier is null.");
 		
 		// draw fringe
 		g.setColor(Color.ORANGE);
 		if (pathfinder.getFringe() != null)
 			for (Node node : pathfinder.getFringe())
 				g.fillRect(node.getX() * nodeSize + 1, node.getY() * nodeSize + 1, nodeSize - 1, nodeSize - 1);
-		else
-			System.out.print("Fringe is null.");
 		
 		// draw path
 		g.setColor(Color.YELLOW);
 		if (pathfinder.getPath() != null)
 			for (Node node : pathfinder.getPath())
 				g.fillRect(node.getX() * nodeSize + 1, node.getY() * nodeSize + 1, nodeSize - 1, nodeSize - 1);
-		else
-			System.out.print("Path is null.");
 		
 		// draw obstacles
 		g.setColor(Color.BLACK);
@@ -107,7 +94,17 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 
+		// zooming in
+		if (e.getWheelRotation() < 0 && nodeSize <= 30)		
+			nodeSize += 1;
+		// zooming out
+		else if (e.getWheelRotation() > 0 && nodeSize >= 10)			
+			nodeSize -= 1;
 
+		pathfinder.frameSetUp();
+		resetEverything();
+		repaint();
+		revalidate();
 		
 	}
 
@@ -169,7 +166,6 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 		// left click, set start node
 		if (SwingUtilities.isLeftMouseButton(e)) {
 			
-			System.out.println("Start Node = [" + node.getX() + ", " + node.getY() + "]");
 			pathfinder.setStartNode(node);
 			repaint();
 			
@@ -178,7 +174,6 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 		// right click, set goal node
 		if (SwingUtilities.isRightMouseButton(e)) {
 			
-			System.out.println("Goal Node = [" + node.getX() + ", " + node.getY() + "]");
 			pathfinder.setGoalNode(node);
 			repaint();
 			
@@ -194,8 +189,6 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 				pathfinder.getGrid().setObstacleCount(pathfinder.getObstacles().size());
 				repaint();
 				
-				System.out.println(pathfinder.getGrid().getObstacleCount());
-				
 			}
 			else {
 				
@@ -209,12 +202,26 @@ public class GridPanel extends JPanel implements MouseListener, MouseWheelListen
 		}
 		
 	}
-	
+
 	// getters
-	public JFrame getFrame() { return frame; }
 	public Pathfinder getPathfinder() { return pathfinder; }
 	public int getHeight() { return height; }
 	public int getWidth() { return width; }
 	public int getNodeSize() { return nodeSize; }
 	
+	// setters
+	public void resetEverything() {
+		
+		pathfinder.setStartNode(null);
+		pathfinder.setGoalNode(null);
+		pathfinder.getGrid().resetNodes();
+		pathfinder.deleteFrontier();
+		pathfinder.deleteFringe();
+		pathfinder.deletePath();
+		pathfinder.deleteAllObstacles();
+		
+	}
+	public void setWidth(int other) { this.width = other; }
+	public void setHeight(int other) {this.height = other; }
+
 }

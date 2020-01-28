@@ -15,8 +15,11 @@ public class Node implements Comparable<Node>{
 		this.h = 0;
 		this.g = 0;
 		this.f = 0;
+		this.gridX = -1;
+		this.gridY = -1;
 		this.traversable = true;
 		this.info = "";
+		this.parent = null;
 		
 	}
 	
@@ -29,6 +32,7 @@ public class Node implements Comparable<Node>{
 		this.gridY = y;
 		this.traversable = true;
 		this.info = "";
+		this.parent = null;
 		
 	}
 	

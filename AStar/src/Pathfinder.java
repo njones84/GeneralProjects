@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 import java.util.Stack;
+
 import java.util.Scanner;
 
 public class Pathfinder {
@@ -12,7 +13,6 @@ public class Pathfinder {
 
 	private PriorityQueue<Node> frontier;
 	private PriorityQueue<Node> fringe;
-	private PriorityQueue<Node> neighbors;
 	private Stack<Node> path;
 	private ArrayList<Node> obstacles;
 	
@@ -55,7 +55,7 @@ public class Pathfinder {
 		
 	}
 	
-	public void ConsoleSetUp() {
+	public void consoleSetUp() {
 		
 		// get amount of rows
 		System.out.println("How many rows would you like in your grid? (Please be generous cause memory can be an issue!): ");
@@ -72,11 +72,11 @@ public class Pathfinder {
 		// generate a new grid at the start of every loop
 		System.out.println("Generating new grid to navigate.");
 		setGrid(new Grid(rows, cols, obstacleCount));
-		grid.GenerateGrid();
+		grid.generateGrid();
 
 		// block the grid after it is generated
 		System.out.println("Adding roadblocks to cells.");
-		grid.BlockGrid();
+		grid.blockGrid();
 		
 		// ask the user to enter the start node's X and Y value
 		System.out.print("Please enter a starting node X value (0-" + (rows - 1) + "): ");
@@ -86,7 +86,7 @@ public class Pathfinder {
 		startY = input.nextInt();
 		System.out.println();
 
-		while (grid.CheckBounds(startX, startY)) {
+		while (grid.checkBounds(startX, startY)) {
 
 			System.out.println("Invalid entry.");
 
@@ -109,7 +109,7 @@ public class Pathfinder {
 		goalY = input.nextInt();
 		System.out.println();
 
-		while (grid.CheckBounds(goalX, goalY)) {
+		while (grid.checkBounds(goalX, goalY)) {
 
 			System.out.println("Invalid entry.");
 
@@ -127,53 +127,38 @@ public class Pathfinder {
 
 		// print update grid
 		System.out.println("Displaying grid. Cells with an X cannot be traversed.");
-		grid.PrintGrid();
+		grid.printGrid();
 	
 	}
 	
-	public void FrameSetUp() {
+	public void frameSetUp() {
 		
-		this.grid = new Grid(this.panel.getWidth() / this.panel.getNodeSize() - 1, this.panel.getHeight() / this.panel.getNodeSize() - 1, 0);
-		grid.GenerateGrid();
+		this.grid = new Grid(this.panel.getWidth() / this.panel.getNodeSize(), this.panel.getHeight() / this.panel.getNodeSize(), 0);
+		grid.generateGrid();
 		
 	}
 	
- 	public boolean AStarSearch() {
+ 	public boolean aStar() {
  		
 		// variables to keep track of nodes
 		frontier = new PriorityQueue<Node>();
 		fringe = new PriorityQueue<Node>();
-		neighbors = new PriorityQueue<Node>();
-		Node currentNode = start;
-
-		// set the current node's distance and visual information
-		// (Diagonal Distance)
-		currentNode.setHeuristicCost(Math.abs(currentNode.getX() - goal.getX()) + Math.abs(currentNode.getY() - goal.getY()));
-		currentNode.setPathCost(0);
-		currentNode.setSumCost(currentNode.getHeursticCost() + currentNode.getPathCost());
 
 		// add current node to the frontier
-		frontier.add(currentNode);
+		frontier.add(start);
 
 		// while the frontier is not empty
 		while (!frontier.isEmpty()) {
 
 			// get the new node each loop and add it to the fringe
-			currentNode = frontier.poll();
+			Node currentNode = frontier.poll();
 			fringe.add(currentNode);
 			
-			// get neighbors
-			neighbors = grid.AddNeighbors(currentNode);
-			
 			// loop through the neighbors queue
-			for (Node node : neighbors) {
+			for (Node node : grid.addNeighbors(currentNode)) {
 
 				// check if goal node
 				if (node == goal) {
-
-					// repaint the panel if one exists
-					if (panel != null)
-						panel.repaint();
 					
 					node.setParent(currentNode);
 					return true;
@@ -183,38 +168,31 @@ public class Pathfinder {
 				// check if the fringe contains this node, if it does skip it
 				if (fringe.contains(node))
 					continue;
-						
+				
 				// if frontier contains this neighbor, check if its path cost is greater than or equal to the current node (the most optimal so far), and if so, then skip it since it is not as optimal
 				if (frontier.contains(node))
-					if (node.getPathCost() >= currentNode.getPathCost())
+					if (node.getPathCost() < currentNode.getPathCost() + 1)
 						continue;
 				
-				// set the child's respective H, G, and F costs and check for diagonal
+				// set the child's respective H, G, and F costs and parent
 				node.setHeuristicCost(Math.abs(node.getX() - goal.getX()) + Math.abs(node.getY() - goal.getY()));
 				node.setPathCost(currentNode.getPathCost() + 1);
 				node.setSumCost(node.getHeursticCost() + node.getPathCost());
+				node.setParent(currentNode);
 				
 				// add the child to the frontier
 				frontier.add(node);
-				node.setParent(currentNode);
-				
-				// debug statement
-				System.out.println("Adding child: " + node.getSumCost() + " [" + node.getX() + ", " + node.getY() + "]");
 
 			}
-			System.out.println();
+			
 		}
-
-		// repaint the panel if one exists
-		if (panel != null)
-			panel.repaint();
 		
 		// if all else fails, return false
 		return false;
 
 	}
 	
-	public void ConstructPath() {
+	public void constructPath() {
 
 		Node node = goal;
 		path = new Stack<Node>();
@@ -226,10 +204,9 @@ public class Pathfinder {
 				
 				node = node.getParent();
 				path.push(node);
-				panel.repaint();
 				
 			}
-			
+
 		}
 		else {
 			
@@ -254,7 +231,7 @@ public class Pathfinder {
 				
 				node = path.pop();
 				node.setInfo("E");
-				grid.PrintGrid();
+				grid.printGrid();
 				
 			}
 			
@@ -262,10 +239,10 @@ public class Pathfinder {
 			
 	}
 
+	
 	// getters
 	public PriorityQueue<Node> getFrontier() { return frontier; }
 	public PriorityQueue<Node> getFringe() { return fringe; }
-	public PriorityQueue<Node> getNeighbors() { return neighbors; }
 	public Stack<Node> getPath() { return path; }
 	public ArrayList<Node> getObstacles() { return obstacles; }
 	public Grid getGrid() { return grid; }

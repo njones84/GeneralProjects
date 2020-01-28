@@ -27,7 +27,7 @@ public class Grid {
 
 	}
 
-	public void GenerateGrid() {
+	public void generateGrid() {
 
 		grid = new Node[rows][cols];
 
@@ -37,7 +37,7 @@ public class Grid {
 
 	}
 
-	public void BlockGrid() {
+	public void blockGrid() {
 
 		int count = 0;
 		Random rng = new Random();
@@ -56,7 +56,7 @@ public class Grid {
 		}
 	}
 
-	public void PrintGrid() {
+	public void printGrid() {
 		
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < cols; j++) {
@@ -77,7 +77,7 @@ public class Grid {
 		}
 	}
 
-	public PriorityQueue<Node> AddNeighbors(Node node) {
+	public PriorityQueue<Node> addNeighbors(Node node) {
 
 		// create new queue to hold neighbors
 		PriorityQueue<Node> neighbors = new PriorityQueue<Node>();
@@ -126,12 +126,12 @@ public class Grid {
 		if (x + 1 < rows && y + 1 < cols)
 			if (grid[x + 1][y + 1].getTraversable())
 				neighbors.add(grid[x + 1][y + 1]);
-
+		
 		return neighbors;
 		
 	}
 
-	public boolean CheckBounds(int x, int y) {
+	public boolean checkBounds(int x, int y) {
 
 		if (x >= rows || y >= cols || x < 0 || y < 0)
 			return true;
@@ -150,5 +150,17 @@ public class Grid {
 	public void setRows(int other) { this.rows = other; }
 	public void setCols(int other) { this.cols = other; }
 	public void setObstacleCount(int other) { this.obstacleCount = other; }
+	public void resetNodes() {
+		
+		// set all parents to null
+		for (int i = 0; i < rows; i++)
+			for (int j = 0; j < cols; j++) {
+				
+				grid[i][j].setParent(null);
+				grid[i][j].setTraversable(true);
+				
+			}
+		
+	}
 
 }

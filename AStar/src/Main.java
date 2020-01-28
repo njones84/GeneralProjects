@@ -5,9 +5,6 @@ import java.awt.event.ActionListener;
 
 public class Main {
 	
-	static Pathfinder pathfinder;
-	static boolean found;
-	
 	public static void main(String[] args) {
 
 		DisplayChoice();
@@ -30,7 +27,7 @@ public class Main {
 			public void actionPerformed(ActionEvent e) {
 				
 				frame.dispose();
-				ConsoleViz();
+				consoleVisualization();
 				
 			}
 		});
@@ -41,7 +38,7 @@ public class Main {
 			public void actionPerformed(ActionEvent e) {
 				
 				frame.dispose();
-				GridVisualization();
+				gridVisualization();
 				
 			}
 		});
@@ -56,16 +53,16 @@ public class Main {
 		
 	}
 	
-	private static void ConsoleViz() {
+	private static void consoleVisualization() {
 		
-		pathfinder = new Pathfinder();
+		Pathfinder pathfinder = new Pathfinder();
 		
-		pathfinder.ConsoleSetUp();
+		pathfinder.consoleSetUp();
 		
-		found = pathfinder.AStarSearch();
+		boolean found = pathfinder.aStar();
 		
 		if (found)
-			pathfinder.ConstructPath();
+			pathfinder.constructPath();
 		else
 			System.out.println("Path not found! (Due to blockages)");
 		
@@ -73,7 +70,7 @@ public class Main {
 		
 	}
 
-	private static void GridVisualization() {
+	private static void gridVisualization() {
 		
 		new Frame("A* Visualization");
 
